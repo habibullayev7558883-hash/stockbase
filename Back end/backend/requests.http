@@ -1,0 +1,96 @@
+### VS Code'da "REST Client" kengaytmasini o'rnating, keyin har bir so'rov ustidagi "Send Request" ni bosing.
+@api = http://localhost:5000/api
+
+### 1) Admin bo'lib kirish
+# @name login
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{ "login": "admin", "password": "admin123" }
+
+###
+@token = {{login.response.body.token}}
+
+### Xodim bo'lib kirish (permissions: sotuv, ombor, xarajatlar, qaytarish)
+POST {{api}}/auth/login
+Content-Type: application/json
+
+{ "login": "dilnoza", "password": "123456" }
+
+### Bosh sahifa
+GET {{api}}/dashboard
+Authorization: Bearer {{token}}
+
+### Ombor: barcha mahsulotlar
+GET {{api}}/products
+Authorization: Bearer {{token}}
+
+### Ombor: faqat kam qolganlar
+GET {{api}}/products?status=kam
+Authorization: Bearer {{token}}
+
+### Ombor: narxi oshganlar (dollar sababli)
+GET {{api}}/products?status=oshgan
+Authorization: Bearer {{token}}
+
+### Dollar kursini yangilash
+POST {{api}}/rates
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "rate": 12900 }
+
+### Sotuv (product ID larni /products dan oling)
+POST {{api}}/sales
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [{ "product": "PRODUCT_ID", "quantity": 1 }],
+  "paymentType": "naqd"
+}
+
+### Qaytarish: chekni qidirish
+GET {{api}}/returns/search?slot=tushdan&amount=518000
+Authorization: Bearer {{token}}
+
+### Xarajat qo'shish
+POST {{api}}/expenses
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "note": "Yetkazib berish uchun benzin", "amount": 180000, "category": "Transport" }
+
+### Bugungi xarajatlar (jami va kim qancha)
+GET {{api}}/expenses?period=today
+Authorization: Bearer {{token}}
+
+### Ta'minotchilar
+GET {{api}}/suppliers
+Authorization: Bearer {{token}}
+
+### Tez kirim
+POST {{api}}/supplies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "supplier": "SUPPLIER_ID",
+  "product": "PRODUCT_ID",
+  "quantity": 10,
+  "unitPrice": 238000,
+  "currency": "UZS",
+  "paid": 1500000
+}
+
+### Bugungi kirimlar va jami
+GET {{api}}/supplies
+Authorization: Bearer {{token}}
+
+### Kunlik hisobot
+GET {{api}}/reports/daily
+Authorization: Bearer {{token}}
+
+### Oylik hisobot
+GET {{api}}/reports/monthly
+Authorization: Bearer {{token}}
